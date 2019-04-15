@@ -2,9 +2,7 @@ package io.ktor.client.engine.okhttp
 
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
-import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
-import io.ktor.client.response.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.util.*

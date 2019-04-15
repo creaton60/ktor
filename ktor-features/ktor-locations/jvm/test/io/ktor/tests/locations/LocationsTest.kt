@@ -18,7 +18,6 @@ private fun withLocationsApplication(test: TestApplicationEngine.() -> Unit) = w
     test()
 }
 
-@UseExperimental(KtorExperimentalLocationsAPI::class)
 class LocationsTest {
     @Location("/") class index()
 
