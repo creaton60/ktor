@@ -19,7 +19,9 @@ class KtorTestServer extends DefaultTask {
         def main = mainClass.getMethod("startServer")
         try {
             server = main.invoke(null)
-        } catch (ignored) {
+        } catch (cause) {
+            println("[TestServer] ERROR: $cause")
+            cause.printStackTrace()
         }
     }
 }
@@ -69,7 +71,7 @@ kotlin.sourceSets {
     }
 }
 
-task startTestServer(type: KtorTestServer, dependsOn: assemble) {
+task startTestServer(type: KtorTestServer, dependsOn: jvmMainClasses) {
     main = "io.ktor.client.tests.utils.TestServerKt"
     classpath = kotlin.targets.jvm.compilations["test"].runtimeDependencyFiles
 }
