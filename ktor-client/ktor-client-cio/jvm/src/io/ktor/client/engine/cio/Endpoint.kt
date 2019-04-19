@@ -78,7 +78,7 @@ internal class Endpoint(
         deliveryPoint.send(task)
     }
 
-    private fun makeDedicatedRequest(task: RequestTask): Job = launch(task.context) {
+    private fun makeDedicatedRequest(task: RequestTask): Job = launch(task.context + CoroutineName("DedicatedRequest")) {
         val (request, response, callContext) = task
         try {
             val connection = connect()

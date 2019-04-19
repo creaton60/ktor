@@ -68,8 +68,8 @@ suspend fun HttpClient.webSocket(
         session.close(cause)
         throw cause
     } finally {
-        session.close(null)
     }
+    session.close(null)
 }
 
 /**

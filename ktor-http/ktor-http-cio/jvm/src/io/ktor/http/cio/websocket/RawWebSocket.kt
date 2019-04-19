@@ -25,7 +25,6 @@ class RawWebSocket(
     private val socketJob: CompletableJob = Job(coroutineContext[Job])
 
     override val coroutineContext: CoroutineContext = coroutineContext + socketJob
-
     override val incoming: ReceiveChannel<Frame> get() = reader.incoming
     override val outgoing: SendChannel<Frame> get() = writer.outgoing
 
@@ -37,17 +36,21 @@ class RawWebSocket(
         writer.masking = newValue
     }
 
-    internal val writer = WebSocketWriter(output, this.coroutineContext, masking, pool)
+    internal val writer: WebSocketWriter = WebSocketWriter(output, this.coroutineContext, masking, pool)
     internal val reader: WebSocketReader = WebSocketReader(input, this.coroutineContext, maxFrameSize, pool)
 
     override suspend fun flush(): Unit = writer.flush()
 
     override fun terminate() {
+        outgoing.close()
         socketJob.completeExceptionally(CancellationException("WebSockedHandler terminated normally"))
     }
 
     override suspend fun close(cause: Throwable?) {
-        cause?.let { socketJob.completeExceptionally(it) } ?: terminate()
+        if (cause != null) {
+            socketJob.completeExceptionally(cause)
+            outgoing.close(cause)
+        } else terminate()
     }
 }
 
