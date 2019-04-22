@@ -9,7 +9,7 @@ import java.nio.channels.*
 internal class ServerSocketImpl(
     override val channel: ServerSocketChannel,
     val selector: SelectorManager
-) : ServerSocket, Selectable by SelectableBase(channel) {
+) : ServerSocket, JvmSelectable by SelectableBase(channel) {
     init {
         require(!channel.isBlocking) { "channel need to be configured as non-blocking" }
     }
