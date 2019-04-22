@@ -1,6 +1,14 @@
 package io.ktor.network.sockets
 
+import io.ktor.network.selector.*
 import io.ktor.network.util.*
+
+internal actual fun TCPSocketBuilder(
+    selector: SelectorManager,
+    options: SocketOptions
+): TCPSocketBuilder {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+}
 
 /**
  * TCP socket builder

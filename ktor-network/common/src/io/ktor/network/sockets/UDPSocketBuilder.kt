@@ -11,8 +11,7 @@ internal expect fun UDPSocketBuilder(
 /**
  * UDP socket builder
  */
-expect class UDPSocketBuilder :
-    Configurable<UDPSocketBuilder, SocketOptions.UDPSocketOptions> {
+expect class UDPSocketBuilder : Configurable<UDPSocketBuilder, SocketOptions.UDPSocketOptions> {
     /**
      * Bind server socket to listen to [localAddress]
      */

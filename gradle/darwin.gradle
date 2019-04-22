@@ -1,8 +1,6 @@
 apply from: rootProject.file("gradle/ide.gradle")
 apply from: rootProject.file("gradle/native.gradle")
 
-apply plugin: "kotlinx-atomicfu"
-
 kotlin {
     targets {
         if (project.ext.ideaActive) {
@@ -20,7 +18,7 @@ kotlin {
             implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-io-native', version: kotlinx_io_version
             implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-io-native', version: kotlinx_io_version
 
-            implementation "org.jetbrains.kotlinx:atomicfu:$atomic_fu_version"
+//            implementation "org.jetbrains.kotlinx:atomicfu:$atomic_fu_version"
         }
 
         darwinMain { dependsOn commonMain }

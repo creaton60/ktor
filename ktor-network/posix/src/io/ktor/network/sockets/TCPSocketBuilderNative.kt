@@ -2,16 +2,12 @@ package io.ktor.network.sockets
 
 import io.ktor.network.selector.*
 import io.ktor.network.util.*
-import java.nio.channels.*
 
 /**
  * TCP socket builder
  */
 @Suppress("PublicApiImplicitType")
-actual class TCPSocketBuilder(
-    private val selector: SelectorManager,
-    override var options: SocketOptions
-) : Configurable<TCPSocketBuilder, SocketOptions> {
+actual class TCPSocketBuilder(override var options: SocketOptions) : Configurable<TCPSocketBuilder, SocketOptions> {
     /**
      * Connect to [hostname] and [port].
      */
@@ -20,14 +16,7 @@ actual class TCPSocketBuilder(
         port: Int,
         configure: SocketOptions.TCPClientSocketOptions.() -> Unit
     ): Socket {
-        val options = options.peer().tcp()
-        configure(options)
-        assignOptions(options)
-        nonBlocking()
-
-        SocketImpl(this, socket()!!, selector).apply {
-            connect(remoteAddress)
-        }
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     /**
@@ -37,16 +26,8 @@ actual class TCPSocketBuilder(
         hostname: String,
         port: Int,
         configure: SocketOptions.AcceptorOptions.() -> Unit
-    ): ServerSocket = selector.buildOrClose({ openDatagramChannel() }) {
-        val options = options.udp()
-        configure(options)
-        assignOptions(options)
-        nonBlocking()
-
-        DatagramSocketImpl(this, selector).apply {
-            channel.socket().bind(localAddress)
-            channel.connect(remoteAddress)
-        }
+    ): ServerSocket {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     /**
@@ -70,6 +51,9 @@ actual class TCPSocketBuilder(
     }
 }
 
-private fun SelectableChannel.nonBlocking() {
-    configureBlocking(false)
+internal actual fun TCPSocketBuilder(
+    selector: SelectorManager,
+    options: SocketOptions
+): TCPSocketBuilder {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 }

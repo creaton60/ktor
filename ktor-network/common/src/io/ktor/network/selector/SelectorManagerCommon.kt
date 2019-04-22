@@ -2,9 +2,6 @@ package io.ktor.network.selector
 
 import io.ktor.util.*
 
-/**
- * Selector manager is a service that manages NIO selectors and selection threads
- */
 interface SelectorManager {
     /**
      * Notifies the selector that selectable has been closed.

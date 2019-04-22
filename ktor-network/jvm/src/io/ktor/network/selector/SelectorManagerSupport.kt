@@ -10,9 +10,9 @@ import kotlin.coroutines.*
  * Base class for NIO selector managers
  */
 @KtorExperimentalAPI
-abstract class SelectorManagerSupport internal constructor() : SelectorManager {
+abstract class SelectorManagerSupport internal constructor() : JvmSelectorManager {
 
-    val provider: SelectorProvider = SelectorProvider.provider()
+    override val provider: SelectorProvider = SelectorProvider.provider()
 
     /**
      * Number of pending selectables
@@ -27,9 +27,10 @@ abstract class SelectorManagerSupport internal constructor() : SelectorManager {
     /**
      * Publish current [selectable] interest, any thread
      */
-    protected abstract fun publishInterest(selectable: Selectable)
+    protected abstract fun publishInterest(selectable: JvmSelectable)
 
     final override suspend fun select(selectable: Selectable, interest: SelectInterest) {
+        require(selectable is JvmSelectable)
         require(selectable.interestedOps and interest.flag != 0)
 
         suspendCancellableCoroutine<Unit> { continuation ->

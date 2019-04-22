@@ -7,10 +7,11 @@ import kotlinx.coroutines.*
 @Suppress("KDocMissingDocumentation")
 @InternalAPI
 class InterestSuspensionsMap {
-    private val interestHandlers: AtomicArray<CancellableContinuation<Unit>?> = atomicArrayOfNulls(SelectInterest.size)
+    val interestHandlers: AtomicArray<CancellableContinuation<Unit>?> = atomicArrayOfNulls(SelectInterest.size)
 
     fun addSuspension(interest: SelectInterest, continuation: CancellableContinuation<Unit>) {
-        val result = interestHandlers[interest.ordinal].compareAndSet(null, continuation)
+        val index = interest.ordinal
+        val result = interestHandlers[index].compareAndSet(null, continuation)
         if (!result) {
             throw IllegalStateException("Handler for ${interest.name} is already registered")
         }
@@ -47,4 +48,6 @@ class InterestSuspensionsMap {
 
     private inline fun reference(interest: SelectInterest): CancellableContinuation<Unit>? =
         interestHandlers[interest.ordinal].value
+
+    companion object
 }

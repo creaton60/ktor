@@ -1,12 +1,15 @@
 package io.ktor.network.sockets
 
 import io.ktor.network.selector.*
+import io.ktor.network.sockets.DatagramSocketImpl
 import io.ktor.network.util.*
+import java.net.*
 
 /**
  * UDP socket builder
  */
 actual class UDPSocketBuilder(
+    private val selector: JvmSelectorManager,
     override var options: SocketOptions.UDPSocketOptions
 ) : Configurable<UDPSocketBuilder, SocketOptions.UDPSocketOptions> {
     /**
@@ -15,8 +18,23 @@ actual class UDPSocketBuilder(
     actual fun bind(
         localAddress: NetworkAddress?,
         configure: SocketOptions.UDPSocketOptions.() -> Unit
-    ): BoundDatagramSocket {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    ): BoundDatagramSocket = bind(localAddress?.toSocketAddress(), configure)
+
+    /**
+     * Bind server socket to listen to [localAddress]
+     */
+    fun bind(
+        localAddress: SocketAddress?,
+        configure: SocketOptions.UDPSocketOptions.() -> Unit = {}
+    ): BoundDatagramSocket = selector.buildOrClose({ openDatagramChannel() }) {
+        val options = options.udp()
+        configure(options)
+        assignOptions(options)
+        nonBlocking()
+
+        DatagramSocketImpl(this, selector).apply {
+            channel.socket().bind(localAddress)
+        }
     }
 
     /**
@@ -26,8 +44,25 @@ actual class UDPSocketBuilder(
         remoteAddress: NetworkAddress,
         localAddress: NetworkAddress?,
         configure: SocketOptions.UDPSocketOptions.() -> Unit
-    ): ConnectedDatagramSocket {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    ): ConnectedDatagramSocket = connect(remoteAddress.toSocketAddress(), localAddress?.toSocketAddress(), configure)
+
+    /**
+     * Create a datagram socket to listen datagrams at [localAddress] and set to [remoteAddress]
+     */
+    fun connect(
+        remoteAddress: SocketAddress,
+        localAddress: SocketAddress?,
+        configure: SocketOptions.UDPSocketOptions.() -> Unit = {}
+    ): ConnectedDatagramSocket = selector.buildOrClose({ openDatagramChannel() }) {
+        val options = options.udp()
+        configure(options)
+        assignOptions(options)
+        nonBlocking()
+
+        DatagramSocketImpl(this, selector).apply {
+            channel.socket().bind(localAddress)
+            channel.connect(remoteAddress)
+        }
     }
 
 }
@@ -36,5 +71,6 @@ internal actual fun UDPSocketBuilder(
     selector: SelectorManager,
     options: SocketOptions.UDPSocketOptions
 ): UDPSocketBuilder {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    require(selector is JvmSelectorManager)
+    return UDPSocketBuilder(selector, options)
 }

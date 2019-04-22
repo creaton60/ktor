@@ -1,0 +1,43 @@
+package=select
+---
+#include <stdbool.h>
+#include <strings.h>
+#include <sys/select.h>
+
+typedef struct DescriptorSet {
+    fd_set set;
+} DescriptorSet;
+
+void addDescriptor(DescriptorSet* set, int descriptor) {
+    FD_SET(descriptor, &set->set);
+}
+
+void removeDescriptor(DescriptorSet* set, int descriptor) {
+    FD_CLR(descriptor, &set->set);
+}
+
+bool containsDescriptor(DescriptorSet* set, int descriptor) {
+    return FD_ISSET(descriptor, &set->set);
+}
+
+void clearDescriptors(DescriptorSet* set) {
+    FD_ZERO(&set->set);
+}
+
+void copyDescriptors(DescriptorSet* source, DescriptorSet* destination) {
+    FD_COPY(&source->set, &destination->set);
+}
+
+void awaitEvent(
+    int max_descriptor,
+    DescriptorSet* readSet,
+    DescriptorSet* writeSet,
+    DescriptorSet* errorSet,
+    int64_t timeoutSeconds, int32_t timeoutMicroseconds
+) {
+    struct timeval timeout;
+    timeout.tv_sec = timeoutSeconds;
+    timeout.tv_usec = timeoutMicroseconds;
+
+    select(max_descriptor, &readSet->set, &writeSet->set, &errorSet->set, &timeout);
+}

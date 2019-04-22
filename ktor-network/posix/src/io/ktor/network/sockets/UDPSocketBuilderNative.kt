@@ -39,9 +39,4 @@ internal actual fun UDPSocketBuilder(
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 }
 
-internal actual fun TCPSocketBuilder(
-    selector: SelectorManager,
-    options: SocketOptions
-): TCPSocketBuilder {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-}
+

@@ -131,8 +131,7 @@ class ActorSelectorManager(dispatcher: CoroutineContext) : SelectorManagerSuppor
     /**
      * Publish current [selectable] interest
      */
-    override fun publishInterest(selectable: Selectable) {
-        check(selectable is JvmSelectable) { "Invalid selectable instance: $selectable" }
+    override fun publishInterest(selectable: JvmSelectable) {
 
         try {
             if (mb.addLast(selectable)) {

@@ -17,7 +17,6 @@ kotlin {
             current.addAll(listOf(getByName("macosX64"), getByName("linuxX64"), getByName("mingwX64")))
         }
 
-
         val paths = listOf("C:/msys64/mingw64/include", "C:/Tools/msys64/mingw64/include")
         current.filterIsInstance<KotlinNativeTarget>().forEach { platform ->
             platform.compilations.getByName("main") {

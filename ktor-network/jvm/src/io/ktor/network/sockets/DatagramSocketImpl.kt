@@ -15,11 +15,13 @@ internal class DatagramSocketImpl(override val channel: DatagramChannel, selecto
 
     private val socket = channel.socket()!!
 
-    override val localAddress: SocketAddress
-        get() = socket.localSocketAddress ?: throw IllegalStateException("Channel is not yet bound")
+    override val localAddress: NetworkAddress
+        get() = socket.localSocketAddress?.toNetworkAddress()
+            ?: throw IllegalStateException("Channel is not yet bound")
 
-    override val remoteAddress: SocketAddress
-        get() = socket.remoteSocketAddress ?: throw IllegalStateException("Channel is not yet connected")
+    override val remoteAddress: NetworkAddress
+        get() = socket.remoteSocketAddress?.toNetworkAddress()
+            ?: throw IllegalStateException("Channel is not yet connected")
 
     private val sender = actor<Datagram>(Dispatchers.IO) {
         consumeEach { datagram ->
@@ -56,7 +58,7 @@ internal class DatagramSocketImpl(override val channel: DatagramChannel, selecto
 
         interestOp(SelectInterest.READ, false)
         buffer.flip()
-        val datagram = Datagram(buildPacket { writeFully(buffer) }, address)
+        val datagram = Datagram(buildPacket { writeFully(buffer) }, address.toNetworkAddress())
         DefaultDatagramByteBufferPool.recycle(buffer)
         return datagram
     }
@@ -74,7 +76,7 @@ internal class DatagramSocketImpl(override val channel: DatagramChannel, selecto
 
         interestOp(SelectInterest.READ, false)
         buffer.flip()
-        val datagram = Datagram(buildPacket { writeFully(buffer) }, address)
+        val datagram = Datagram(buildPacket { writeFully(buffer) }, address.toNetworkAddress())
         DefaultDatagramByteBufferPool.recycle(buffer)
         return datagram
     }
@@ -84,9 +86,9 @@ internal class DatagramSocketImpl(override val channel: DatagramChannel, selecto
         datagram.packet.readAvailable(buffer)
         buffer.flip()
 
-        val rc = channel.send(buffer, datagram.address)
+        val rc = channel.send(buffer, datagram.address.toSocketAddress())
         if (rc == 0) {
-            sendSuspend(buffer, datagram.address)
+            sendSuspend(buffer, datagram.address.toSocketAddress())
         } else {
             interestOp(SelectInterest.WRITE, false)
         }

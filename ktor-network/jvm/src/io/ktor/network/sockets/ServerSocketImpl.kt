@@ -1,6 +1,7 @@
 package io.ktor.network.sockets
 
 import io.ktor.network.selector.*
+import io.ktor.network.util.*
 import kotlinx.coroutines.*
 import java.net.*
 import java.nio.channels.*
@@ -11,13 +12,13 @@ internal class ServerSocketImpl(
     val selector: SelectorManager
 ) : ServerSocket, JvmSelectable by SelectableBase(channel) {
     init {
-        require(!channel.isBlocking) { "channel need to be configured as non-blocking" }
+        require(!channel.isBlocking) { "Channel need to be configured as non-blocking." }
     }
 
     override val socketContext: CompletableJob = Job()
 
-    override val localAddress: SocketAddress
-        get() = channel.socket().localSocketAddress
+    override val localAddress: NetworkAddress
+        get() = channel.socket().localSocketAddress.toNetworkAddress()
 
     override suspend fun accept(): Socket {
         channel.accept()?.let { return accepted(it) }

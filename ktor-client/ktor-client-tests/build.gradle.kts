@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.plugin.*
 import java.io.*
 import java.net.*
 
@@ -28,7 +29,8 @@ open class KtorTestServer : DefaultTask() {
             val mainClass = loader.loadClass(main)
             val main = mainClass.getMethod("startServer")
             server = main.invoke(null) as Closeable
-        } catch (ignored: Throwable) {
+        } catch (cause: Throwable) {
+            println("[TestServer] failed to start: $cause")
         }
     }
 
@@ -90,7 +92,8 @@ kotlin.sourceSets {
     }
 }
 
-val startTestServer = task<KtorTestServer>("startTestServer") {
+
+val startTestServer = tasks.register<KtorTestServer>("startTestServer") {
     dependsOn(tasks.jvmMainClasses)
 
     main = "io.ktor.client.tests.utils.TestServerKt"
@@ -114,14 +117,15 @@ if (!ideaActive) {
 }
 
 rootProject.allprojects {
-    tasks.matching { it.name in testTasks }.configureEach({
+    val tasks = tasks.matching { it.name in testTasks }
+    configure(tasks) {
         dependsOn(startTestServer)
-    })
+    }
 }
 
 gradle.buildFinished {
-    if (startTestServer.server != null) {
-        startTestServer.server?.close()
+    if (startTestServer.get().server != null) {
+        startTestServer.get().server?.close()
         println("[TestServer] stop")
     }
 }
