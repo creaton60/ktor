@@ -69,9 +69,11 @@ class WebSocketWriter(
         consumeEach { message ->
             when (message) {
                 is Frame.Close -> {} // ignore
-                is Frame.Ping, is Frame.Pong -> {} // ignore
+                is Frame.Ping, is Frame.Pong -> {
+                } // ignore
                 is FlushRequest -> message.complete()
-                is Frame.Text, is Frame.Binary -> {} // discard
+                is Frame.Text, is Frame.Binary -> {
+                } // discard
                 else -> throw IllegalArgumentException("unknown message $message")
             }
         }

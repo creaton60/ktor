@@ -27,10 +27,15 @@ class OkHttpEngine(
         val callContext = createCallContext()
         val engineRequest = data.convertToOkHttpRequest(callContext)
 
-        return if (data.isUpgradeRequest()) {
-            executeWebSocketRequest(engineRequest, callContext)
-        } else {
-            executeHttpRequest(engineRequest, callContext)
+        return try {
+            if (data.isUpgradeRequest()) {
+                executeWebSocketRequest(engineRequest, callContext)
+            } else {
+                executeHttpRequest(engineRequest, callContext)
+            }
+        } catch (cause: Throwable) {
+            (callContext[Job] as? CompletableJob)?.completeExceptionally(cause)
+            throw cause
         }
     }
 
@@ -65,12 +70,12 @@ class OkHttpEngine(
         val body = response.body()
         callContext[Job]?.invokeOnCompletion { body?.close() }
 
-        val responseContent = withContext(callContext) {
+        val responseContent = async(callContext) {
             body?.byteStream()?.toByteReadChannel(
                 context = callContext,
                 pool = KtorDefaultPool
             ) ?: ByteReadChannel.Empty
-        }
+        }.await()
 
         return buildResponseData(response, requestTime, responseContent, callContext)
 

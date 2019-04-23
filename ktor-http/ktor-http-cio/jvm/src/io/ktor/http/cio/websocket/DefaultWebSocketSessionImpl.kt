@@ -100,7 +100,7 @@ class DefaultWebSocketSessionImpl(
             raw.incoming.consumeEach { frame ->
                 when (frame) {
                     is Frame.Close -> {
-                        outgoing.send(frame)
+                        sendCloseSequence(frame.readReason())
                         return@launch
                     }
                     is Frame.Pong -> pinger.value?.send(frame)

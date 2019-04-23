@@ -43,7 +43,7 @@ class RawWebSocket(
 
     override fun terminate() {
         outgoing.close()
-        socketJob.completeExceptionally(CancellationException("WebSockedHandler terminated normally"))
+        socketJob.complete()
     }
 
     override suspend fun close(cause: Throwable?) {
