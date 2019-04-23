@@ -13,6 +13,7 @@ import kotlin.coroutines.*
 private val IncomingProcessorCoroutineName = CoroutineName("ws-incoming-processor")
 private val OutgoingProcessorCoroutineName = CoroutineName("ws-outgoing-processor")
 
+private val NORMAL_CLOSE = CloseReason(CloseReason.Codes.NORMAL, "OK")
 /**
  * Default web socket session implementation that handles ping-pongs, close sequence and frame fragmentation
  */
@@ -83,7 +84,7 @@ class DefaultWebSocketSessionImpl(
         if (closed.value) return
 
         val reason = when (cause) {
-            null -> CloseReason(CloseReason.Codes.NORMAL, "OK")
+            null -> NORMAL_CLOSE
             is ClosedReceiveChannelException, is ClosedSendChannelException -> null
             else -> CloseReason(CloseReason.Codes.UNEXPECTED_CONDITION, cause.message ?: cause.javaClass.name)
         }
@@ -100,7 +101,7 @@ class DefaultWebSocketSessionImpl(
             raw.incoming.consumeEach { frame ->
                 when (frame) {
                     is Frame.Close -> {
-                        sendCloseSequence(frame.readReason())
+                        outgoing.send(Frame.Close(frame.readReason() ?: NORMAL_CLOSE))
                         return@launch
                     }
                     is Frame.Pong -> pinger.value?.send(frame)

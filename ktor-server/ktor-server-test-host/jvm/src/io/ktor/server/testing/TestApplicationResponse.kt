@@ -123,10 +123,14 @@ class TestApplicationResponse(
     private val webSocketCompleted: CompletableJob = Job()
 
     override suspend fun respondUpgrade(upgrade: OutgoingContent.ProtocolUpgrade) {
-        upgrade.upgrade(call.receiveChannel(), responseChannel(), Dispatchers.Default, Dispatchers.Unconfined)
-            .invokeOnCompletion {
-                webSocketCompleted.complete()
-            }
+        upgrade.upgrade(
+            call.receiveChannel(),
+            responseChannel(),
+            Dispatchers.Default,
+            Dispatchers.Default
+        ).invokeOnCompletion {
+            webSocketCompleted.complete()
+        }
     }
 
     /**

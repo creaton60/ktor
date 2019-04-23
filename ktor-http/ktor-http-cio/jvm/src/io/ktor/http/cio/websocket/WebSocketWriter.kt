@@ -1,5 +1,6 @@
 package io.ktor.http.cio.websocket
 
+import io.ktor.util.*
 import io.ktor.util.cio.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
@@ -62,6 +63,9 @@ class WebSocketWriter(
                 }
             }
         } finally {
+            (coroutineContext[Job] as? CompletableJob)?.apply {
+                complete()
+            }
             close()
             writeChannel.close()
         }
