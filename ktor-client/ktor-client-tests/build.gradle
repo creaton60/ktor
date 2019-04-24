@@ -12,12 +12,11 @@ class KtorTestServer extends DefaultTask {
     @TaskAction
     public void exec() {
         println("[TestServer] start")
-        def urlClassLoaderSource = classpath.collect { file -> file.toURI().toURL() }
-        def loader = new URLClassLoader(urlClassLoaderSource.toArray() as URL[], ClassLoader.systemClassLoader)
-
-        def mainClass = loader.loadClass(main)
-        def main = mainClass.getMethod("startServer")
         try {
+            def urlClassLoaderSource = classpath.collect { file -> file.toURI().toURL() }
+            def loader = new URLClassLoader(urlClassLoaderSource.toArray() as URL[], ClassLoader.systemClassLoader)
+            def mainClass = loader.loadClass(main)
+            def main = mainClass.getMethod("startServer")
             server = main.invoke(null)
         } catch (cause) {
             println("[TestServer] ERROR: $cause")

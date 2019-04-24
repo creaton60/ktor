@@ -54,9 +54,9 @@ internal class JsClientEngine(override val config: HttpClientEngineConfig) : Htt
         val urlString = request.url.toString()
         val socket: WebSocket = if (PlatformUtils.IS_NODE) {
             val ws = js("require('ws')")
-            js("new ws(urlString)") as WebSocket
+            js("new ws(urlString)")
         } else {
-            WebSocket(urlString)
+            js("new WebSocket(urlString)")
         }
 
         socket.awaitConnection()

@@ -49,7 +49,7 @@ kotlin.sourceSets {
         listOf("macosX64Test", "iosX64Test", "iosArm32Test", "iosArm64Test").map { named<KotlinSourceSet>(it) }.forEach {
             it {
                 dependencies {
-                    api(project(":ktor-client:ktor-client-ios"))
+//                    api(project(":ktor-client:ktor-client-ios"))
                 }
             }
         }

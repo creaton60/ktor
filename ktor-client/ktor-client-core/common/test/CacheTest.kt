@@ -8,7 +8,7 @@ import kotlin.test.*
 
 class CacheTest {
     @Test
-    fun testNoStore() = clientsTest {
+    fun testNoStore() = clientsTest(skipMissingPlatforms = true) {
         var storage: HttpCache.Config? = null
         config {
             install(HttpCache) {
@@ -32,7 +32,7 @@ class CacheTest {
     }
 
     @Test
-    fun testNoCache() = clientsTest {
+    fun testNoCache() = clientsTest(skipMissingPlatforms = true) {
         var storage: HttpCache.Config? = null
         config {
             install(HttpCache) {
@@ -56,7 +56,7 @@ class CacheTest {
     }
 
     @Test
-    fun testETagCache() = clientsTest {
+    fun testETagCache() = clientsTest(skipMissingPlatforms = true) {
         var storage: HttpCache.Config? = null
         config {
             install(HttpCache) {
@@ -78,7 +78,7 @@ class CacheTest {
     }
 
     @Test
-    fun testMaxAge() = clientsTest {
+    fun testMaxAge() = clientsTest(skipMissingPlatforms = true) {
         var storage: HttpCache.Config? = null
         config {
             install(HttpCache) {
@@ -103,7 +103,7 @@ class CacheTest {
     }
 
     @Test
-    fun testPublicAndPrivateCache() = clientsTest {
+    fun testPublicAndPrivateCache() = clientsTest(skipMissingPlatforms = true) {
         var storage: HttpCache.Config? = null
         config {
             install(HttpCache) {
