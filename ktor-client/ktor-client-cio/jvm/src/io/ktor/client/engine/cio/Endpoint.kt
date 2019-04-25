@@ -33,14 +33,8 @@ internal class Endpoint(
     private val postman = launch(start = CoroutineStart.LAZY) {
         try {
             while (true) {
-                val task = withTimeoutOrNull(maxEndpointIdleTime) {
+                val task = withTimeout(maxEndpointIdleTime) {
                     tasks.receive()
-                }
-
-                if (task == null) {
-                    onDone()
-                    tasks.close()
-                    continue
                 }
 
                 try {
@@ -54,9 +48,11 @@ internal class Endpoint(
                     throw cause
                 }
             }
-        } catch (_: Throwable) {
+        } catch (cause: Throwable) {
         } finally {
             deliveryPoint.close()
+            tasks.close()
+            onDone()
         }
     }
 
@@ -82,7 +78,7 @@ internal class Endpoint(
         deliveryPoint.send(task)
     }
 
-    private fun makeDedicatedRequest(task: RequestTask): Job = launch {
+    private fun makeDedicatedRequest(task: RequestTask): Job = launch(task.context + CoroutineName("DedicatedRequest")) {
         val (request, response, callContext) = task
         try {
             val connection = connect()
